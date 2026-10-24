@@ -1,0 +1,19 @@
+[project]
+name = "lesson3"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "azure-ai-projects>=2.9.0",
+    "azure-identity>=1.26.0",
+    "openai>=3.37.0",
+    "pip>=26.2.2",
+]
+
+[project.scripts]
+lesson3 = "lesson3:main"
+
+[build-system]
+requires = ["uv_build>=0.13.5,<0.14.0"]
+build-backend = "uv_build"
