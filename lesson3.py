@@ -1,21 +1,32 @@
-from openai import OpenAI
+import asyncio
 from azure.identity import DefaultAzureCredential, get_bearer_token_provider
-import os
+from openai import AsyncOpenAI
 token_provider = get_bearer_token_provider(
     DefaultAzureCredential(), "https://ai.azure.com/.default"
 )
 
-openai_client = OpenAI(  
+client = AsyncOpenAI(  
   base_url = "https://hpacleb1997-1272-resource.openai.azure.com/openai/v1", 
-  api_key=token_provider,
+  api_key=token_provider(),
 )
 
-response = openai_client.responses.create(
-    model="DeepSeek-V4-Flash",
-    input="Explain machine learning in simple terms."
-)
 
-print(f"Response: {response.output_text}")
-print(f"Response ID: {response.id}")
-print(f"Tokens used: {response.usage.total_tokens}")
-print(f"Status: {response.status}")
+async def ask(prompt):
+    response = await client.responses.create(
+        model="gpt-5-mini",
+        input=prompt
+    )
+    return response.output_text
+
+async def main():
+    # Issue three requests concurrently instead of one after another
+    prompts = [
+        "Explain quantum computing briefly.",
+        "Summarize the benefits of async I/O.",
+        "Give a one-sentence definition of machine learning."
+    ]
+    results = await asyncio.gather(*(ask(p) for p in prompts))
+    for prompt, output in zip(prompts, results):
+        print(f"Q: {prompt}\nA: {output}\n")
+
+asyncio.run(main())
